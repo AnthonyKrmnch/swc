@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
@@ -121,6 +121,53 @@ LOGIN_URL = 'login'
 
 STATIC_URL = 'static/'
 LOGOUT_REDIRECT_URL = 'login'
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Другие настройки вашего проекта...
+
+# Создайте путь к файлу лога
+LOGGING_DIR = os.path.join(BASE_DIR, 'logs')
+
+# Создайте директорию для логов, если она не существует
+if not os.path.exists(LOGGING_DIR):
+    os.makedirs(LOGGING_DIR)
+
+LOGGING = {
+    'version': 1,  # Версия конфигурации
+    'disable_existing_loggers': False,  # Не отключать существующие логгеры
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',  # Уровень логирования
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGGING_DIR, 'django_debug.log'),  # Путь к файлу лога
+            'formatter': 'verbose',  # Формат логов
+        },
+        'console': {
+            'class': 'logging.StreamHandler',  # Вывод в консоль
+            'formatter': 'simple',  # Формат логов
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],  # Обработчики для логов
+            'level': 'DEBUG',  # Уровень логирования
+            'propagate': True,  # Передача логов в родительские логгеры
+        },
+    },
+}
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
